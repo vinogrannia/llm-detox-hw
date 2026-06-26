@@ -328,6 +328,21 @@ python -m tasks.task4_bt_loss
 case lands on `log 2`, the three-pair fixture matches the expected
 values, and the sign points the right way when chosen loses.)
 
+Sanity-check `build_rm` + `rm_step` next (loads Qwen-0.5B, so the
+first run downloads ~1 GB to the HF cache; subsequent runs are
+fast):
+
+```bash
+python -m tests.test_task5_reward_head
+```
+
+(prints `task 5 (build_rm + rm_step) — all tests passed` — verifies
+the RM forward returns `(batch,)`-shaped scalar scores and `rm_step`
+returns a finite scalar loss on a tiny fixture batch. The
+`score.weight | MISSING` line above the success message is expected —
+that's AMFSC initialising a fresh scalar head on the causal-LM base,
+explained again further down.)
+
 Then:
 
 ```bash
