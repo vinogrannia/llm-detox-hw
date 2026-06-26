@@ -2,7 +2,7 @@
 
 You will push `Qwen/Qwen2.5-0.5B` (the **non-Instruct** variant) away
 from hostile completions on three held-out prompt families, using SFT
-→ DPO → PPO via verl. Eight tasks, 100 points.
+→ DPO → PPO via verl.
 
 We start from the non-Instruct base because the Instruct variant has
 already been RLHF'd into politeness — a detox-direction homework
