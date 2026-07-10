@@ -182,9 +182,24 @@ def train(
             #   - ``chosen_r``  — shape ``(batch/2,)``, for the log line further down
             #   - ``rejected_r``— shape ``(batch/2,)``, same
             # <YOUR CODE HERE>
-            raise NotImplementedError(
-                "Task 2 (part 2): wire dpo_loss into the trainer"
+
+                        policy_logps = per_example_logps(pol_out.logits, labels)
+            reference_logps = per_example_logps(ref_out.logits, labels)
+
+            policy_chosen_logps = policy_logps[0::2]
+            policy_rejected_logps = policy_logps[1::2]
+            reference_chosen_logps = reference_logps[0::2]
+            reference_rejected_logps = reference_logps[1::2]
+
+            losses, chosen_r, rejected_r = dpo_loss(
+                policy_chosen_logps,
+                policy_rejected_logps,
+                reference_chosen_logps,
+                reference_rejected_logps,
+                beta=beta,
             )
+            loss = losses.mean()
+            
             # ==================================================================
             (loss / grad_accum).backward()
             micro += 1
