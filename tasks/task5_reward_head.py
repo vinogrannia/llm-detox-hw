@@ -63,7 +63,22 @@ def build_rm(
         ``(batch, 1)`` (squeeze the last dim to get ``(batch,)`` scores).
     """
     # <YOUR CODE HERE>
-    raise NotImplementedError("Task 5: implement build_rm")
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_name,
+        num_labels=1,
+        dtype=torch.float32,
+    )
+    model.config.pad_token_id = pad_token_id
+
+    lora_config = LoraConfig(
+        task_type=TaskType.SEQ_CLS,
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        lora_dropout=lora_dropout,
+        target_modules="all-linear",
+    )
+
+    return get_peft_model(model, lora_config)
 
 
 def rm_step(rm, batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -93,4 +108,16 @@ def rm_step(rm, batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, torch.Ten
     at the top of this file).
     """
     # <YOUR CODE HERE>
-    raise NotImplementedError("Task 5: implement rm_step")
+    chosen_scores = rm(
+        input_ids=batch["chosen_ids"],
+        attention_mask=batch["chosen_attn"],
+    ).logits.squeeze(-1)
+
+    rejected_scores = rm(
+        input_ids=batch["rejected_ids"],
+        attention_mask=batch["rejected_attn"],
+    ).logits.squeeze(-1)
+
+    loss = bt_loss(chosen_scores, rejected_scores).mean()
+
+    return loss, chosen_scores, rejected_scores
