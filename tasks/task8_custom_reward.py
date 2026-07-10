@@ -57,6 +57,18 @@ _STOPWORDS = {
     "your",
 }
 
+_GENERIC_REFUSALS = (
+    "i don't understand",
+    "i do not understand",
+    "i cannot help",
+    "i can't help",
+    "i cannot assist",
+    "i can't assist",
+    "i'm sorry",
+    "provide more context",
+    "not programmed to",
+)
+
 
 def _words(text: str) -> list[str]:
     return re.findall(r"[a-z0-9']+", text.lower())
@@ -138,6 +150,13 @@ def reward_score(
 
         empty_penalty = 0.50 if len(words) < 3 else 0.0
 
+        generic_refusal_penalty = (
+            0.35
+            if len(words) <= 12
+            and any(phrase in normalized_text for phrase in _GENERIC_REFUSALS)
+            else 0.0
+        )
+
         reward = (
             detox_reward
             + relevance_bonus
@@ -145,6 +164,7 @@ def reward_score(
             - length_penalty
             - duplicate_penalty
             - empty_penalty
+            - generic_refusal_penalty
         )
         rewards.append(float(reward))
 
