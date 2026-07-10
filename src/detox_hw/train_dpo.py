@@ -183,7 +183,7 @@ def train(
             #   - ``rejected_r``— shape ``(batch/2,)``, same
             # <YOUR CODE HERE>
 
-                        policy_logps = per_example_logps(pol_out.logits, labels)
+            policy_logps = per_example_logps(pol_out.logits, labels)
             reference_logps = per_example_logps(ref_out.logits, labels)
 
             policy_chosen_logps = policy_logps[0::2]
@@ -199,7 +199,7 @@ def train(
                 beta=beta,
             )
             loss = losses.mean()
-            
+
             # ==================================================================
             (loss / grad_accum).backward()
             micro += 1
