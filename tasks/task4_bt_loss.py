@@ -33,7 +33,7 @@ def bt_loss(
         Tensor of shape ``(batch,)`` — per-row BT loss.
     """
     # <YOUR CODE HERE>
-    raise NotImplementedError("Task 4: implement bt_loss")
+    return -F.logsigmoid(chosen_scores - rejected_scores)
 
 # --------------------------------------------------------------------------- #
 # Self-check — run with: python -m tasks.task4_bt_loss                        #
